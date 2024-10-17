@@ -8,7 +8,7 @@
 
 #include "cyclichash.h"
 
-int main() {
+int main(void) {
   CyclicHash<> hf(5, 19);
   string input = "ABCDE";
   hf.eat(input[0]); // A

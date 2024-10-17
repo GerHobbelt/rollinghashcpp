@@ -188,7 +188,7 @@ bool test() {
   return ok;
 }
 
-int main() {
+int main(void) {
   bool ok(test());
   if (ok)
     cout << "your code is ok!" << endl;

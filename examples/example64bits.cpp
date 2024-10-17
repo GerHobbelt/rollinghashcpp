@@ -7,7 +7,7 @@
 
 #include "cyclichash.h"
 
-int main() {
+int main(void) {
   CyclicHash<uint64> hf(5, 64);
   string input = "ABCDE";
   hf.eat(input[0]); // A

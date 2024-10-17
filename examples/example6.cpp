@@ -78,4 +78,4 @@ void Compare() {
   CalcHashes(s2 + s1, WindowSize, h1, h2, h3, h4, h5);
 }
 
-int main() { Compare(); }
+int main(void) { Compare(); }

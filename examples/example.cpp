@@ -5,7 +5,7 @@
 
 #include "rabinkarphash.h"
 
-int main() {
+int main(void) {
   size_t q = 3;
   size_t k = 4;
   typedef KarpRabinHash<> HashFunction;

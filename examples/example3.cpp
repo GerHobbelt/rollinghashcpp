@@ -32,4 +32,4 @@ int demo1() {
   return 0;
 }
 
-int main() { demo1(); }
+int main(void) { demo1(); }
