@@ -3,7 +3,7 @@
 // contributed by Dmitry Artamonov
 // this is *deterministic*
 class Adler32 {
-  uint32 sum1, sum2;
+  uint32_t sum1, sum2;
 
 public:
   static const uint32_t Base = 65521;
