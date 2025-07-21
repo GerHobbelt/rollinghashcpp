@@ -1,24 +1,21 @@
 #ifndef CHARACTERHASH
 #define CHARACTERHASH
 
-typedef unsigned long long uint64;
-typedef unsigned int uint32;
-typedef unsigned int uint;
-
 #include "mersennetwister.h"
 #include <cassert>
 #include <iostream>
 #include <stdexcept>
+#include <cstdint>
 
 using namespace std;
 
 class mersenneRNG {
 public:
-  mersenneRNG(uint32 maxval) : mtr(), n(maxval){};
-  uint32 operator()() { return mtr.randInt(n); }
-  void seed(uint32 seedval) { mtr.seed(seedval); }
+  mersenneRNG(uint32_t maxval) : mtr(), n(maxval){};
+  uint32_t operator()() { return mtr.randInt(n); }
+  void seed(uint32_t seedval) { mtr.seed(seedval); }
   void seed() { mtr.seed(); }
-  uint32 rand_max() { return n; }
+  uint32_t rand_max() { return n; }
 
 private:
   MTRand mtr;
@@ -37,7 +34,7 @@ constexpr
   return x ^ (x - 1);
 }
 
-template <typename hashvaluetype = uint32, typename chartype = unsigned char>
+template <typename hashvaluetype = uint32_t, typename chartype = unsigned char>
 class CharacterHash {
 public:
   CharacterHash(hashvaluetype maxval) {
@@ -56,7 +53,7 @@ public:
       throw runtime_error("unsupported hash value type");
   }
 
-  CharacterHash(hashvaluetype maxval, uint32 seed1, uint32 seed2) {
+  CharacterHash(hashvaluetype maxval, uint32_t seed1, uint32_t seed2) {
     if (sizeof(hashvaluetype) <= 4) {
       mersenneRNG randomgenerator(maxval);
       randomgenerator.seed(seed1);

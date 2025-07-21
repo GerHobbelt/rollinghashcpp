@@ -5,19 +5,20 @@
 #include "ztimer.h"
 #include <fstream>
 #include <string>
+#include <cstdint>
 
 using namespace std;
 
 template <class hashfunction>
-double hashALot(int n, int L, uint ttimes, uint sizeoftest,
-                vector<uint32> &recorder) {
+double hashALot(int n, int L, uint_least32_t ttimes, uint_least32_t sizeoftest,
+                vector<uint32_t> &recorder) {
   ZTimer t;
-  for (uint times = 0; times < ttimes; ++times) {
+  for (uint_least32_t times = 0; times < ttimes; ++times) {
     hashfunction hf(n, L);
-    for (uint k = 0; k < static_cast<uint>(n); ++k) {
+    for (uint_least32_t k = 0; k < static_cast<uint_least32_t>(n); ++k) {
       hf.eat(static_cast<unsigned char>(k));
     }
-    for (uint k = n; k < sizeoftest; ++k) {
+    for (uint_least32_t k = n; k < sizeoftest; ++k) {
       hf.update(static_cast<unsigned char>(k - n),
                 static_cast<unsigned char>(k));
     }
@@ -31,15 +32,15 @@ double hashALot(int n, int L, uint ttimes, uint sizeoftest,
 }
 
 template <class hashfunction>
-double hashALot(int n, int L, uint ttimes, vector<uint32> &recorder,
+double hashALot(int n, int L, uint_least32_t ttimes, vector<uint32_t> &recorder,
                 vector<unsigned char> &data) {
   ZTimer t;
-  for (uint times = 0; times < ttimes; ++times) {
+  for (uint_least32_t times = 0; times < ttimes; ++times) {
     hashfunction hf(n, L);
-    for (uint k = 0; k < static_cast<uint>(n); ++k) {
+    for (uint_least32_t k = 0; k < static_cast<uint_least32_t>(n); ++k) {
       hf.eat(data[k]);
     }
-    for (uint k = n; k < data.size(); ++k) {
+    for (uint_least32_t k = n; k < data.size(); ++k) {
       hf.update(data[k - n], data[k]);
     }
     /* The goal of the recorder is to prevent
@@ -53,10 +54,10 @@ double hashALot(int n, int L, uint ttimes, vector<uint32> &recorder,
 
 void synthetic() {
   int L = 19;
-  vector<uint32> recorder;
-  uint sizeoftest = 100000000;
+  vector<uint32_t> recorder;
+  uint_least32_t sizeoftest = 100000000;
   cout << "#n three-wise General BufferedGeneral Cyclic Karp-Rabin " << endl;
-  for (uint n = 1; n + L <= 32; ++n) {
+  for (uint_least32_t n = 1; n + L <= 32; ++n) {
     cout << n << " " << hashALot<ThreeWiseHash<>>(n, L, 1, sizeoftest, recorder)
          << " ";
     cout << hashALot<GeneralHash<NOPRECOMP>>(n, L, 1, sizeoftest, recorder)
@@ -75,19 +76,19 @@ void grabFileContent(vector<unsigned char> &data, string filename) {
   std::getline(file, line);
   while (file.good()) {
     std::getline(file, line);
-    for (uint k = 0; k < line.size(); ++k)
+    for (uint_least32_t k = 0; k < line.size(); ++k)
       data.push_back(line[k]); // presumably not very fast to do it char by char
   }
   file.close();
 }
 void realdata(string filename) {
   int L = 19;
-  vector<uint32> recorder;
-  uint repeats = 1;
+  vector<uint32_t> recorder;
+  uint_least32_t repeats = 1;
   vector<unsigned char> data;
   grabFileContent(data, filename);
   cout << "#n three-wise General BufferedGeneral Cyclic Karp-Rabin " << endl;
-  for (uint n = 1; n + L <= 32; ++n) {
+  for (uint_least32_t n = 1; n + L <= 32; ++n) {
     cout << n << " " << hashALot<ThreeWiseHash<>>(n, L, repeats, recorder, data)
          << " ";
     cout << hashALot<GeneralHash<NOPRECOMP>>(n, L, repeats, recorder, data)

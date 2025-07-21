@@ -1,5 +1,6 @@
 #include <deque>
 #include <map>
+#include <cstdint>
 
 #include "cyclichash.h"
 #include "generalhash.h"
@@ -9,8 +10,8 @@
 
 using namespace std;
 
-template <class hashfunction> bool testExtendAndPrepend(uint L = 19) {
-  const uint n(4); // n-grams
+template <class hashfunction> bool testExtendAndPrepend(uint_least32_t L = 19) {
+  const uint_least32_t n(4); // n-grams
   hashfunction hf(n, L);
   string input = "XABCDY";
   string base(input.begin() + 1, input.end() - 1);
@@ -46,17 +47,17 @@ template <class hashfunction> bool testExtendAndPrepend(uint L = 19) {
   return true;
 }
 
-template <class hashfunction> bool isItAFunction(uint L = 7) {
+template <class hashfunction> bool isItAFunction(uint_least32_t L = 7) {
   mersenneRNG generator(5);
-  const uint n(3); // n-grams
+  const uint_least32_t n(3); // n-grams
   hashfunction hf(n, L);
   deque<unsigned char> s;
-  for (uint32 k = 0; k < n; ++k) {
+  for (uint32_t k = 0; k < n; ++k) {
     unsigned char c = static_cast<unsigned char>(generator() + 65);
     s.push_back(c);
     hf.eat(c);
   }
-  for (uint32 k = 0; k < 100000; ++k) {
+  for (uint32_t k = 0; k < 100000; ++k) {
     unsigned char out = s.front();
     s.pop_front();
     char c(generator() + 65);
@@ -65,11 +66,11 @@ template <class hashfunction> bool isItAFunction(uint L = 7) {
     hf.update(out, c);
     if (hf.hash(s) != hf.hashvalue) {
       for (deque<unsigned char>::iterator ii = s.begin(); ii != s.end(); ++ii)
-        cout << *ii << " " << static_cast<uint32>(*ii) << endl;
+        cout << *ii << " " << static_cast<uint32_t>(*ii) << endl;
       cerr << "bug" << endl;
       cerr << s[0] << s[1] << s[2] << " was hashed to " << hf.hashvalue
            << " when true hash value is " << hf.hash(s) << endl;
-      for (uint j = 0; j < n; ++j)
+      for (uint_least32_t j = 0; j < n; ++j)
         cerr << s[j] << "->" << hf.hasher.hashvalues[s[j]] << endl;
       return false;
     }
@@ -77,17 +78,17 @@ template <class hashfunction> bool isItAFunction(uint L = 7) {
   return true;
 }
 
-template <class hashfunction> bool doesReverseUpdateWorks(uint L = 7) {
+template <class hashfunction> bool doesReverseUpdateWorks(uint_least32_t L = 7) {
   mersenneRNG generator(5);
-  const uint n(3); // n-grams
+  const uint_least32_t n(3); // n-grams
   hashfunction hf(n, L);
   deque<unsigned char> s;
-  for (uint32 k = 0; k < n; ++k) {
+  for (uint32_t k = 0; k < n; ++k) {
     unsigned char c = static_cast<unsigned char>(generator() + 65);
     s.push_back(c);
     hf.eat(c);
   }
-  for (uint32 k = 0; k < 100000; ++k) {
+  for (uint32_t k = 0; k < 100000; ++k) {
     unsigned char out = s.front();
     s.pop_front();
     char c(generator() + 65);
@@ -102,7 +103,7 @@ template <class hashfunction> bool doesReverseUpdateWorks(uint L = 7) {
   return true;
 }
 
-template <class hashfunction> bool isItRandom(uint L = 19) {
+template <class hashfunction> bool isItRandom(uint_least32_t L = 19) {
   cout << "checking that it is randomized " << endl;
   int n = 5;
   vector<unsigned char> data(n);
@@ -110,10 +111,10 @@ template <class hashfunction> bool isItRandom(uint L = 19) {
     data[k] = static_cast<unsigned char>(k);
   }
   hashfunction base(n, L);
-  uint64 x = base.hash(data);
+  uint64_t x = base.hash(data);
   for (int k = 0; k < 100; ++k) {
     hashfunction hf(n, L);
-    uint64 y = hf.hash(data);
+    uint64_t y = hf.hash(data);
     if (y != x) {
       cout << "It is randomized! " << endl;
       return true;
@@ -128,46 +129,46 @@ template <class hashfunction> bool isItRandom(uint L = 19) {
 bool test() {
   bool ok(true);
   cout << "Karp-Rabin" << endl;
-  for (uint L = 1; L <= 32; ++L) {
+  for (uint_least32_t L = 1; L <= 32; ++L) {
     if (!ok)
       return false;
     ok &= isItAFunction<KarpRabinHash<>>();
   }
   ok &= isItRandom<KarpRabinHash<>>();
-  for (uint L = 1; L <= 64; ++L) {
+  for (uint_least32_t L = 1; L <= 64; ++L) {
     if (!ok)
       return false;
-    ok &= isItAFunction<KarpRabinHash<uint64>>();
+    ok &= isItAFunction<KarpRabinHash<uint64_t>>();
   }
-  ok &= isItRandom<KarpRabinHash<uint64>>();
+  ok &= isItRandom<KarpRabinHash<uint64_t>>();
   if (!ok)
     return false;
   cout << "cyclic" << endl;
-  for (uint L = 2; L <= 32; ++L) {
+  for (uint_least32_t L = 2; L <= 32; ++L) {
     if (!ok)
       return false;
     ok &= testExtendAndPrepend<CyclicHash<>>(L);
     ok &= isItAFunction<CyclicHash<>>(L);
     ok &= doesReverseUpdateWorks<CyclicHash<>>(L);
   }
-  for (uint L = 2; L <= 64; ++L) {
+  for (uint_least32_t L = 2; L <= 64; ++L) {
     if (!ok)
       return false;
-    ok &= testExtendAndPrepend<CyclicHash<uint64>>(L);
-    ok &= isItAFunction<CyclicHash<uint64>>(L);
+    ok &= testExtendAndPrepend<CyclicHash<uint64_t>>(L);
+    ok &= isItAFunction<CyclicHash<uint64_t>>(L);
   }
   ok &= isItRandom<CyclicHash<>>();
-  ok &= isItRandom<CyclicHash<uint64>>();
+  ok &= isItRandom<CyclicHash<uint64_t>>();
 
   cout << "three-wise" << endl;
-  for (uint L = 1; L <= 32; ++L) {
+  for (uint_least32_t L = 1; L <= 32; ++L) {
     ok &= isItAFunction<ThreeWiseHash<>>(L);
   }
   ok &= isItRandom<ThreeWiseHash<>>();
-  for (uint L = 1; L <= 64; ++L) {
-    ok &= isItAFunction<ThreeWiseHash<uint64>>(L);
+  for (uint_least32_t L = 1; L <= 64; ++L) {
+    ok &= isItAFunction<ThreeWiseHash<uint64_t>>(L);
   }
-  ok &= isItRandom<ThreeWiseHash<uint64>>();
+  ok &= isItRandom<ThreeWiseHash<uint64_t>>();
 
   cout << "general" << endl;
   ok &= isItAFunction<GeneralHash<NOPRECOMP>>(9);

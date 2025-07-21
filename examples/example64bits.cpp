@@ -2,13 +2,14 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 // Example of 64-bit hashing
 
 #include "cyclichash.h"
 
 int main(void) {
-  CyclicHash<uint64> hf(5, 64);
+  CyclicHash<uint64_t> hf(5, 64);
   string input = "ABCDE";
   hf.eat(input[0]); // A
   hf.eat(input[1]); // B

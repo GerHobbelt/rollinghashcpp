@@ -4,6 +4,7 @@
 #include "characterhash.h"
 #include <deque>
 #include <vector>
+#include <cstdint>
 
 using namespace std;
 
@@ -13,7 +14,7 @@ using namespace std;
  *
  * Recommended usage to get L-bit hash values over n-grams:
  *        ThreeWiseHash<> hf(n,L );
- *        for(uint32 k = 0; k<n;++k) {
+ *        for(uint32_t k = 0; k<n;++k) {
  *                  unsigned char c = ... ; // grab some character
  *                  hf.eat(c); // feed it to the hasher
  *        }
@@ -24,7 +25,7 @@ using namespace std;
  *           hf.update(out,c); // update hash value
  *        }
  */
-template <typename hashvaluetype = uint32, typename chartype = unsigned char>
+template <typename hashvaluetype = uint32_t, typename chartype = unsigned char>
 class ThreeWiseHash {
 
 public:
@@ -34,7 +35,7 @@ public:
   // integers
   ThreeWiseHash(int myn, int mywordsize = 19)
       : n(myn), wordsize(mywordsize), hashers(), hasher(0) {
-    if (static_cast<uint>(wordsize) > 8 * sizeof(hashvaluetype)) {
+    if (static_cast<uint_least32_t>(wordsize) > 8 * sizeof(hashvaluetype)) {
       cerr << "Can't create " << wordsize << "-bit hash values" << endl;
       throw "abord";
     }

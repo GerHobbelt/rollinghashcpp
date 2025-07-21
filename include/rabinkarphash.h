@@ -3,6 +3,7 @@
 
 #include "characterhash.h"
 #include <cstring>
+#include <cstdint>
 
 /**
  * This is a randomized version of the Karp-Rabin hash function.
@@ -11,7 +12,7 @@
  *
  * Recommended usage to get L-bit hash values over n-grams:
  *        KarpRabinHash<> hf(n,L );
- *        for(uint32 k = 0; k<n;++k) {
+ *        for(uint32_t k = 0; k<n;++k) {
  *                  unsigned char c = ... ; // grab some character
  *                  hf.eat(c); // feed it to the hasher
  *        }
@@ -22,7 +23,7 @@
  *           hf.update(out,c); // update hash value
  *        }
  */
-template <typename hashvaluetype = uint32, typename chartype = unsigned char>
+template <typename hashvaluetype = uint32_t, typename chartype = unsigned char>
 class KarpRabinHash {
 
 public:
@@ -47,9 +48,9 @@ public:
   // rolling hash function
   template <class container> hashvaluetype hash(container &c) {
     hashvaluetype answer(0);
-    for (uint k = 0; k < c.size(); ++k) {
+    for (uint_least32_t k = 0; k < c.size(); ++k) {
       hashvaluetype x(1);
-      for (uint j = 0; j < c.size() - 1 - k; ++j) {
+      for (uint_least32_t j = 0; j < c.size() - 1 - k; ++j) {
         x = (x * B) & HASHMASK;
       }
       x = (x * hasher.hashvalues[c[k]]) & HASHMASK;
@@ -83,7 +84,7 @@ public:
   static const hashvaluetype B = 37;
 };
 
-template <typename hashvaluetype = uint32, typename chartype = unsigned char,
+template <typename hashvaluetype = uint32_t, typename chartype = unsigned char,
           unsigned wordsize = CHAR_BIT * sizeof(hashvaluetype)>
 class KarpRabinHashBits {
   // The key difference between KarpRabinHashBits and KarpRabinHash is that
@@ -123,9 +124,9 @@ public:
   // rolling hash function
   template <class container> hashvaluetype hash(container &c) const {
     hashvaluetype answer(0);
-    for (uint k = 0; k < c.size(); ++k) {
+    for (uint_least32_t k = 0; k < c.size(); ++k) {
       hashvaluetype x(1);
-      for (uint j = 0; j < c.size() - 1 - k; ++j) {
+      for (uint_least32_t j = 0; j < c.size() - 1 - k; ++j) {
         x = (x * B);
         mask_value(x);
       }
@@ -141,10 +142,10 @@ public:
   }
   hashvaluetype hash(const char *s) const {
     hashvaluetype answer(0);
-    uint csz = std::strlen(s);
-    for (uint k = 0; k < csz; ++k) {
+    uint_least32_t csz = std::strlen(s);
+    for (uint_least32_t k = 0; k < csz; ++k) {
       hashvaluetype x(1);
-      for (uint j = 0; j < csz - 1 - k; ++j) {
+      for (uint_least32_t j = 0; j < csz - 1 - k; ++j) {
         x = (x * B);
         mask_value(x);
       }

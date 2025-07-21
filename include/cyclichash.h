@@ -1,6 +1,8 @@
 #ifndef CYCLICHASH
 #define CYCLICHASH
 
+#include <cstdint>
+
 #include "characterhash.h"
 
 /**
@@ -9,7 +11,7 @@
  *
  * Recommended usage to get L-bit hash values over n-grams:
  *        CyclicHash<> hf(n,L );
- *        for(uint32 k = 0; k<n;++k) {
+ *        for(uint32_t k = 0; k<n;++k) {
  *                  unsigned char c = ... ; // grab some character
  *                  hf.eat(c); // feed it to the hasher
  *        }
@@ -20,7 +22,7 @@
  *           hf.update(out,c); // update hash value
  *        }
  */
-template <typename hashvaluetype = uint32, typename chartype = unsigned char>
+template <typename hashvaluetype = uint32_t, typename chartype = unsigned char>
 class CyclicHash {
 
 public:
@@ -33,18 +35,18 @@ public:
         hasher(maskfnc<hashvaluetype>(wordsize)),
         mask1(maskfnc<hashvaluetype>(wordsize - 1)), myr(n % wordsize),
         maskn(maskfnc<hashvaluetype>(wordsize - myr)) {
-    if (static_cast<uint>(wordsize) > 8 * sizeof(hashvaluetype)) {
+    if (static_cast<uint_least32_t>(wordsize) > 8 * sizeof(hashvaluetype)) {
       cerr << "Can't create " << wordsize << "-bit hash values" << endl;
       throw "abord";
     }
   }
 
-  CyclicHash(int myn, uint32 seed1, uint32 seed2, int mywordsize = 19)
+  CyclicHash(int myn, uint32_t seed1, uint32_t seed2, int mywordsize = 19)
       : hashvalue(0), n(myn), wordsize(mywordsize),
         hasher(maskfnc<hashvaluetype>(wordsize), seed1, seed2),
         mask1(maskfnc<hashvaluetype>(wordsize - 1)), myr(n % wordsize),
         maskn(maskfnc<hashvaluetype>(wordsize - myr)) {
-    if (static_cast<uint>(wordsize) > 8 * sizeof(hashvaluetype)) {
+    if (static_cast<uint_least32_t>(wordsize) > 8 * sizeof(hashvaluetype)) {
       cerr << "Can't create " << wordsize << "-bit hash values" << endl;
       throw "abord";
     }
@@ -74,17 +76,17 @@ public:
   // rolling hash function
   template <class container> hashvaluetype hash(container &c) {
     hashvaluetype answer(0);
-    for (uint k = 0; k < c.size(); ++k) {
+    for (uint_least32_t k = 0; k < c.size(); ++k) {
       fastleftshift1(answer);
       answer ^= hasher.hashvalues[static_cast<unsigned int>(c[k])];
     }
     return answer;
   }
 
-  hashvaluetype hashz(chartype outchar, uint n) {
+  hashvaluetype hashz(chartype outchar, uint_least32_t n) {
     hashvaluetype answer =
         hasher.hashvalues[static_cast<unsigned int>(outchar)];
-    for (uint k = 0; k < n; ++k) {
+    for (uint_least32_t k = 0; k < n; ++k) {
       fastleftshift1(answer);
     }
     return answer;

@@ -23,8 +23,8 @@ get new hash values for a given input.
 
         const uint n(3);//hash all sequences of 3 characters
         const uint L(7); // you need 7 bits
-        CyclicHash<uint32> hf(n,L );// if you want 64-bit values replace uint32 by uint64
-        for(uint32 k = 0; k<n;++k) {
+        CyclicHash<uint32_t> hf(n,L );// if you want 64-bit values replace uint32_t by uint64
+        for(uint32_t k = 0; k<n;++k) {
                   chartype c = ... ; // grab some character
                   hf.eat(c); // feed it to the hasher
         }

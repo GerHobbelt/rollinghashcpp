@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cstdint>
 
 #include "characterhash.h"
 
@@ -16,7 +17,7 @@ enum { NOPRECOMP, FULLPRECOMP };
  *
  * Recommended usage to get L-bit hash values over n-grams:
  *        GeneralHash<> hf(n,L );
- *        for(uint32 k = 0; k<n;++k) {
+ *        for(uint32_t k = 0; k<n;++k) {
  *                  unsigned char c = ... ; // grab some character
  *                  hf.eat(c); // feed it to the hasher
  *        }
@@ -27,7 +28,7 @@ enum { NOPRECOMP, FULLPRECOMP };
  *           hf.update(out,c); // update hash value
  *        }
  */
-template <int precomputationtype = NOPRECOMP, typename hashvaluetype = uint32,
+template <int precomputationtype = NOPRECOMP, typename hashvaluetype = uint32_t,
           typename chartype = unsigned char>
 class GeneralHash {
 public:
@@ -107,7 +108,7 @@ public:
   // rolling hash function
   template <class container> hashvaluetype hash(container &c) const {
     hashvaluetype answer(0);
-    for (uint k = 0; k < c.size(); ++k) {
+    for (uint_least32_t k = 0; k < c.size(); ++k) {
       fastleftshift(answer, 1);
       answer ^= hasher.hashvalues[c[k]];
     }
