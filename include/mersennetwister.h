@@ -80,26 +80,25 @@ Pseudo-Random Number Generator}}, author={MATSUMOTO, M. and NISHIMURA, T.},
 #include <math.h>
 #include <stdio.h>
 #include <time.h>
+#include <stdint.h>
 
 class MTRand {
   // Data
 public:
-  typedef unsigned long uint32; // unsigned integer type, at least 32 bits
-
-  enum { N = 624 };      // length of state vector
-  enum { SAVE = N + 1 }; // length of array for save()
+  constexpr static const int N = 624;      // length of state vector
+  constexpr static const int SAVE = N + 1; // length of array for save()
 
 protected:
-  enum { M = 397 }; // period parameter
+  constexpr static const int M = 397; // period parameter
 
-  uint32 state[N]; // internal state
-  uint32 *pNext;   // next value to get from state
+  uint32_t state[N]; // internal state
+  uint32_t *pNext;   // next value to get from state
   int left;        // number of values left before reload needed
 
   // Methods
 public:
-  MTRand(const uint32 &oneSeed); // initialize with a simple uint32
-  MTRand(uint32 *const bigSeed, uint32 const seedLength = N); // or an array
+  MTRand(const uint32_t &oneSeed); // initialize with a simple uint32_t
+  MTRand(uint32_t *const bigSeed, uint32_t const seedLength = N); // or an array
   MTRand(); // auto-initialize with /dev/urandom or time() and clock()
 
   // Do NOT use for CRYPTOGRAPHY without securely hashing several returned
@@ -113,8 +112,8 @@ public:
   double randExc(const double &n);    // real number in [0,n)
   double randDblExc();                // real number in (0,1)
   double randDblExc(const double &n); // real number in (0,n)
-  uint32 randInt();                   // integer in [0,2^32-1]
-  uint32 randInt(const uint32 &n);    // integer in [0,n] for n < 2^32
+  uint32_t randInt();                   // integer in [0,2^32-1]
+  uint32_t randInt(const uint32_t &n);    // integer in [0,n] for n < 2^32
   double operator()() {
     return rand(); // same as rand()
   }
@@ -126,35 +125,35 @@ public:
   double randNorm(const double &mean = 0.0, const double &variance = 0.0);
 
   // Re-seeding functions with same behavior as initializers
-  void seed(const uint32 oneSeed);
-  void seed(uint32 *const bigSeed, const uint32 seedLength = N);
+  void seed(const uint32_t oneSeed);
+  void seed(uint32_t *const bigSeed, const uint32_t seedLength = N);
   void seed();
 
   // Saving and loading generator state
-  void save(uint32 *saveArray) const; // to array of size SAVE
-  void load(uint32 *const loadArray); // from such array
+  void save(uint32_t *saveArray) const; // to array of size SAVE
+  void load(uint32_t *const loadArray); // from such array
   friend std::ostream &operator<<(std::ostream &os, const MTRand &mtrand);
   friend std::istream &operator>>(std::istream &is, MTRand &mtrand);
 
 protected:
-  void initialize(const uint32 oneSeed);
+  void initialize(const uint32_t oneSeed);
   void reload();
-  uint32 hiBit(const uint32 &u) const { return u & 0x80000000UL; }
-  uint32 loBit(const uint32 &u) const { return u & 0x00000001UL; }
-  uint32 loBits(const uint32 &u) const { return u & 0x7fffffffUL; }
-  uint32 mixBits(const uint32 &u, const uint32 &v) const {
+  uint32_t hiBit(const uint32_t &u) const { return u & 0x80000000UL; }
+  uint32_t loBit(const uint32_t &u) const { return u & 0x00000001UL; }
+  uint32_t loBits(const uint32_t &u) const { return u & 0x7fffffffUL; }
+  uint32_t mixBits(const uint32_t &u, const uint32_t &v) const {
     return hiBit(u) | loBits(v);
   }
-  uint32 twist(const uint32 &m, const uint32 &s0, const uint32 &s1) const {
+  uint32_t twist(const uint32_t &m, const uint32_t &s0, const uint32_t &s1) const {
     return m ^ (mixBits(s0, s1) >> 1) ^
            (-static_cast<long>(loBit(s1)) & 0x9908b0dfUL);
   }
-  static uint32 hash(time_t t, clock_t c);
+  static uint32_t hash(time_t t, clock_t c);
 };
 
-MTRand::MTRand(const uint32 &oneSeed) { seed(oneSeed); }
+MTRand::MTRand(const uint32_t &oneSeed) { seed(oneSeed); }
 
-MTRand::MTRand(uint32 *const bigSeed, const uint32 seedLength) {
+MTRand::MTRand(uint32_t *const bigSeed, const uint32_t seedLength) {
   seed(bigSeed, seedLength);
 }
 
@@ -175,7 +174,7 @@ double MTRand::randDblExc() {
 double MTRand::randDblExc(const double &n) { return randDblExc() * n; }
 
 double MTRand::rand53() {
-  uint32 a = randInt() >> 5, b = randInt() >> 6;
+  uint32_t a = randInt() >> 5, b = randInt() >> 6;
   return (a * 67108864.0 + b) * (1.0 / 9007199254740992.0); // by Isaku Wada
 }
 
@@ -187,7 +186,7 @@ double MTRand::randNorm(const double &mean, const double &variance) {
   return mean + r * cos(phi);
 }
 
-MTRand::uint32 MTRand::randInt() {
+uint32_t MTRand::randInt() {
   // Pull a 32-bit integer from the generator state
   // Every other access function simply transforms the numbers extracted here
 
@@ -195,7 +194,7 @@ MTRand::uint32 MTRand::randInt() {
     reload();
   --left;
 
-  uint32 s1;
+  uint32_t s1;
   s1 = *pNext++;
   s1 ^= (s1 >> 11);
   s1 ^= (s1 << 7) & 0x9d2c5680UL;
@@ -203,10 +202,10 @@ MTRand::uint32 MTRand::randInt() {
   return (s1 ^ (s1 >> 18));
 }
 
-MTRand::uint32 MTRand::randInt(const uint32 &n) {
+uint32_t MTRand::randInt(const uint32_t &n) {
   // Find which bits are used in n
   // Optimized by Magnus Jonsson (magnus@smartelectronix.com)
-  uint32 used = n;
+  uint32_t used = n;
   used |= used >> 1;
   used |= used >> 2;
   used |= used >> 4;
@@ -214,30 +213,30 @@ MTRand::uint32 MTRand::randInt(const uint32 &n) {
   used |= used >> 16;
 
   // Draw numbers until one is found in [0,n]
-  uint32 i;
+  uint32_t i;
   do
     i = randInt() & used; // toss unused bits to shorten search
   while (i > n);
   return i;
 }
 
-void MTRand::seed(const uint32 oneSeed) {
-  // Seed the generator with a simple uint32
+void MTRand::seed(const uint32_t oneSeed) {
+  // Seed the generator with a simple uint32_t
   initialize(oneSeed);
   reload();
 }
 
-void MTRand::seed(uint32 *const bigSeed, const uint32 seedLength) {
-  // Seed the generator with an array of uint32's
+void MTRand::seed(uint32_t *const bigSeed, const uint32_t seedLength) {
+  // Seed the generator with an array of uint32_t's
   // There are 2^19937-1 possible initial states.  This function allows
   // all of those to be accessed by providing at least 19937 bits (with a
-  // default seed length of N = 624 uint32's).  Any bits above the lower 32
+  // default seed length of N = 624 uint32_t's).  Any bits above the lower 32
   // in each element are discarded.
   // Just call seed() if you want to get array from /dev/urandom
   initialize(19650218UL);
   int i = 1;
-  uint32 j = 0;
-  int k = (uint32(N) > seedLength ? int(N) : int(seedLength));
+  uint32_t j = 0;
+  int k = (uint32_t(N) > seedLength ? int(N) : int(seedLength));
   for (; k; --k) {
     state[i] = state[i] ^ ((state[i - 1] ^ (state[i - 1] >> 30)) * 1664525UL);
     state[i] += (bigSeed[j] & 0xffffffffUL) + j;
@@ -273,12 +272,12 @@ void MTRand::seed() {
   // First try getting an array from /dev/urandom
   FILE *urandom = fopen("/dev/urandom", "rb");
   if (urandom) {
-    uint32 bigSeed[N];
-    uint32 *s = bigSeed;
+    uint32_t bigSeed[N];
+    uint32_t *s = bigSeed;
     int i = N;
     bool success = true;
     while (success && i--)
-      success = (fread(s++, sizeof(uint32), 1, urandom) == 1);
+      success = (fread(s++, sizeof(uint32_t), 1, urandom) == 1);
     fclose(urandom);
     if (success) {
       seed(bigSeed, N);
@@ -290,13 +289,13 @@ void MTRand::seed() {
   seed(hash(time(NULL), clock()));
 }
 
-void MTRand::initialize(const uint32 seed) {
+void MTRand::initialize(const uint32_t seed) {
   // Initialize generator state with seed
   // See Knuth TAOCP Vol 2, 3rd Ed, p.106 for multiplier.
   // In previous versions, most significant bits (MSBs) of the seed affect
   // only MSBs of the state array.  Modified 9 Jan 2002 by Makoto Matsumoto.
-  uint32 *s = state;
-  uint32 *r = state;
+  uint32_t *s = state;
+  uint32_t *r = state;
   int i = 1;
   *s++ = seed & 0xffffffffUL;
   for (; i < N; ++i) {
@@ -308,7 +307,7 @@ void MTRand::initialize(const uint32 seed) {
 void MTRand::reload() {
   // Generate N new values in state
   // Made clearer and faster by Matthew Bellew (matthew.bellew@home.com)
-  uint32 *p = state;
+  uint32_t *p = state;
   int i;
   for (i = N - M; i--; ++p)
     *p = twist(p[M], p[0], p[1]);
@@ -319,20 +318,20 @@ void MTRand::reload() {
   left = N, pNext = state;
 }
 
-MTRand::uint32 MTRand::hash(time_t t, clock_t c) {
-  // Get a uint32 from t and c
-  // Better than uint32(x) in case x is floating point in [0,1]
+uint32_t MTRand::hash(time_t t, clock_t c) {
+  // Get a uint32_t from t and c
+  // Better than uint32_t(x) in case x is floating point in [0,1]
   // Based on code by Lawrence Kirby (fred@genesis.demon.co.uk)
 
-  static uint32 differ = 0; // guarantee time-based seeds will change
+  static uint32_t differ = 0; // guarantee time-based seeds will change
 
-  uint32 h1 = 0;
+  uint32_t h1 = 0;
   unsigned char *p = reinterpret_cast<unsigned char *>(&t);
   for (size_t i = 0; i < sizeof(t); ++i) {
     h1 *= UCHAR_MAX + 2U;
     h1 += p[i];
   }
-  uint32 h2 = 0;
+  uint32_t h2 = 0;
   p = reinterpret_cast<unsigned char *>(&c);
   for (size_t j = 0; j < sizeof(c); ++j) {
     h2 *= UCHAR_MAX + 2U;
@@ -341,18 +340,18 @@ MTRand::uint32 MTRand::hash(time_t t, clock_t c) {
   return (h1 + differ++) ^ h2;
 }
 
-void MTRand::save(uint32 *saveArray) const {
-  uint32 *sa = saveArray;
-  const uint32 *s = state;
+void MTRand::save(uint32_t *saveArray) const {
+  uint32_t *sa = saveArray;
+  const uint32_t *s = state;
   int i = N;
   for (; i--; *sa++ = *s++) {
   }
   *sa = left;
 }
 
-void MTRand::load(uint32 *const loadArray) {
-  uint32 *s = state;
-  uint32 *la = loadArray;
+void MTRand::load(uint32_t *const loadArray) {
+  uint32_t *s = state;
+  uint32_t *la = loadArray;
   int i = N;
   for (; i--; *s++ = *la++) {
   }
@@ -361,7 +360,7 @@ void MTRand::load(uint32 *const loadArray) {
 }
 
 std::ostream &operator<<(std::ostream &os, const MTRand &mtrand) {
-  const MTRand::uint32 *s = mtrand.state;
+  const uint32_t *s = mtrand.state;
   int i = mtrand.N;
   for (; i--; os << *s++ << "\t") {
   }
@@ -369,7 +368,7 @@ std::ostream &operator<<(std::ostream &os, const MTRand &mtrand) {
 }
 
 std::istream &operator>>(std::istream &is, MTRand &mtrand) {
-  MTRand::uint32 *s = mtrand.state;
+  uint32_t *s = mtrand.state;
   int i = mtrand.N;
   for (; i--; is >> *s++) {
   }
@@ -402,7 +401,7 @@ std::istream &operator>>(std::istream &is, MTRand &mtrand) {
 //        clarifying return values in seed(); suggested by Eric Heimburg
 //      - Removed MAXINT constant; use 0xffffffffUL instead
 //
-// v0.6 - Eliminated seed overflow when uint32 is larger than 32 bits
+// v0.6 - Eliminated seed overflow when uint32_t is larger than 32 bits
 //      - Changed integer [0,n] generator to give better uniformity
 //
 // v0.7 - Fixed operator precedence ambiguity in reload()
